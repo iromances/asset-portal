@@ -83,6 +83,37 @@ export const constantRoutes = [
       }
     ]
   },
+  //  业务数据路由
+  {
+    path: '/trade',
+    component: Layout,
+    redirect: '/table/complex-table',
+    name: 'Trade',
+    meta: {
+      title: 'Trade',
+      icon: 'table'
+    },
+    children: [
+      {
+        path: 'resource',
+        component: () => import('@/views/trade/history/index'),
+        name: 'TradeHistoryDetail',
+        meta: { title: '历史成交明细' }
+      },
+      {
+        path: 'record',
+        component: () => import('@/views/trade/record/index'),
+        name: 'TradeRecord',
+        meta: { title: '交易记录' }
+      },
+      {
+        path: 'market',
+        component: () => import('@/views/trade/market/index'),
+        name: 'DayilyMarket',
+        meta: { title: '市场行情模板' }
+      }
+    ]
+  },
   {
     path: '/documentation',
     component: Layout,
