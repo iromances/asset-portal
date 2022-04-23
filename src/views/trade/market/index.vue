@@ -3,8 +3,32 @@
     <div class="filter-container">
       <el-input v-model="listQuery.stockCode" placeholder="代码" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.stockName" placeholder="名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-date-picker
+        v-model="listQuery.tradeDate"
+        align="right"
+        type="date"
+        placeholder="交易日期"
+        class="filter-item"
+        value-format="yyyy-MM-dd"
+        :picker-options="pickerOptions"
+      />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         查询
+      </el-button>
+      <!--      <el-upload
+        class="upload-demo"
+        action="http://localhos:8888/asset/attachment/upload"
+        :on-preview="handlePreview"
+        :on-remove="handleRemove"
+        :before-remove="beforeRemove"
+        multiple
+        :limit="1"
+        :on-exceed="handleExceed"
+        :file-list="fileList">
+        <el-button size="small" type="primary">点击上传</el-button>
+      </el-upload>-->
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="downloadNewStock">
+        下载扫描模板
       </el-button>
     </div>
 
@@ -20,7 +44,7 @@
     >
       <el-table-column label="ID" prop="id" align="center" />
       <el-table-column label="排名" prop="seq" align="center" />
-      <el-table-column label="交易日" prop="tradeDate" width="100" align="center" />
+      <el-table-column label="交易日期" prop="tradeDate" width="100" align="center" />
       <el-table-column label="代码" prop="stockCode" align="center" />
       <el-table-column label="名称" prop="stockName" width="250" align="center" />
       <el-table-column label="所属行业" prop="industry" width="100" align="center" />
@@ -65,16 +89,44 @@
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+
+    <el-dialog title="下载" :visible.sync="downloadDialogVisible" width="500px">
+      <el-form ref="form" label-width="120px">
+        <el-form-item label="请选择市场">
+          <el-select v-model="market" value="M" placeholder="请选择市场" clearable style="width: 220px" class="filter-item">
+            <el-option v-for="item in marketArray" :key="item.key" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="交易日期">
+          <el-date-picker
+            v-model="downloadTradeDate"
+            align="right"
+            type="date"
+            placeholder="yyyy-MM-dd"
+            class="filter-item"
+            value-format="yyyy-MM-dd"
+            :picker-options="pickerOptions"
+          />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="downloadDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="confirmDownload">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { fetchList } from '@/api/DailyMarketApi'
+import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import axios from 'axios'
 
 export default {
   name: 'DayilyMarket',
   components: { Pagination },
+  directives: { waves },
   data() {
     return {
       tableHeight: document.documentElement.clientHeight - 309 + 'px',
@@ -90,6 +142,33 @@ export default {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
+      },
+      fileList: [],
+      marketArray: [
+        { key: '1', label: '美股', value: 'M' },
+        { key: '2', label: '港股', value: 'H' },
+        { key: '3', label: '沪深', value: 'A' }
+      ],
+      market: '',
+      downloadTradeDate: null,
+      downloadDialogVisible: false,
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now()
+        },
+        shortcuts: [{
+          text: '今天',
+          onClick(picker) {
+            picker.$emit('pick', new Date())
+          }
+        }, {
+          text: '昨天',
+          onClick(picker) {
+            const date = new Date()
+            date.setTime(date.getTime() - 3600 * 1000 * 24)
+            picker.$emit('pick', date)
+          }
+        }]
       }
     }
   },
@@ -127,6 +206,31 @@ export default {
         this.listQuery.sort = '-id'
       }
       this.handleFilter()
+    },
+    downloadNewStock() {
+      this.downloadDialogVisible = true
+    },
+    confirmDownload() {
+      axios({
+        url: 'http://localhost:8888/asset/trade/daily/market/download' + '?tradeDate=' + this.downloadTradeDate + '&market=' + this.market,
+        method: 'post',
+        data: {
+          tradeDate: this.downloadTradeDate,
+          market: this.market
+        },
+        responseType: 'blob'
+      }).then(result => {
+        console.log(result)
+        const url = window.URL.createObjectURL(new Blob([result.data]))
+        const fileName = 'test' + '-' + name + '.ebk'
+        const link = document.createElement('a')
+        link.download = fileName
+        link.style.display = 'none'
+        link.href = url
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
     }
   }
 }
