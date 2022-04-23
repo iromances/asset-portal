@@ -222,7 +222,7 @@ export default {
       }).then(result => {
         console.log(result)
         const url = window.URL.createObjectURL(new Blob([result.data]))
-        const fileName = 'test' + '-' + name + '.ebk'
+        const fileName = this.market + '_' + this.downloadTradeDate + '.ebk'
         const link = document.createElement('a')
         link.download = fileName
         link.style.display = 'none'
