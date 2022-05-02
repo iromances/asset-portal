@@ -10,6 +10,9 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         查询
       </el-button>
+      <el-button v-waves class="filter-item" type="success" icon="el-icon-upload2" @click="uploadDialogVisible = true">
+        上传明细
+      </el-button>
     </div>
 
     <el-table
@@ -65,11 +68,48 @@
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+
+    <el-dialog
+      title="上传历史交易明细文件"
+      :visible.sync="uploadDialogVisible"
+      :close-on-click-modal="false"
+      width="700px"
+      @closed="handleUploadDialogClosed"
+    >
+      <el-form ref="form" label-width="120px">
+        <el-form-item label="券商">
+          <el-select v-model="uploadData.broker" placeholder="请选择" style="width: 180px" class="filter-item">
+            <el-option v-for="item in brokersArray" :key="item.key" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="交易明细">
+          <el-upload
+            class="upload-demo"
+            action="http://localhost:8888/asset/attachment/upload"
+            :on-remove="handleRemove"
+            :before-remove="beforeRemove"
+            :limit="1"
+            :on-exceed="handleExceed"
+            :on-success="handleSuccess"
+            drag
+            show-file-list
+            :file-list="fileList"
+          >
+            <i class="el-icon-upload" />
+            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="uploadDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitTradeFile">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList } from '@/api/tradeHistoryDetailApi'
+import { fetchList, submitFile } from '@/api/tradeHistoryDetailApi'
 import { parse2Time } from '@/utils/index'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -134,7 +174,19 @@ export default {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-      }
+      },
+      uploadDialogVisible: false,
+      brokersArray: [
+        { key: '1', label: '富途牛牛', value: 'FTNN' },
+        { key: '2', label: '老虎', value: 'TIGER' }
+      ],
+      uploadData: {
+        broker: 'FTNN',
+        attachmentId: null
+      },
+      fileList: [
+        // { name: '', url: '', id:'' }
+      ]
     }
   },
   created() {
@@ -175,6 +227,46 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
+    },
+    handleUploadDialogClosed() {
+      this.uploadData.attachmentId = null
+      this.fileList = []
+    },
+    submitTradeFile() {
+      if (!this.uploadData.attachmentId) {
+        this.$notify({
+          title: '提示',
+          message: '请先上传交易明细文件！ ',
+          type: 'warning'
+        })
+        return
+      }
+      submitFile(this.uploadData).then(response => {
+        console.log(response)
+        this.uploadDialogVisible = false
+        this.$notify({
+          title: '提示',
+          message: '文件解析成功！',
+          type: 'success'
+        })
+      })
+    },
+    // 上传
+    handleRemove(file, fileList) {
+      this.uploadData.attachmentId = null
+    },
+    handleExceed(files, fileList) {
+      this.$notify({
+        title: '警告',
+        message: '当前限制选择 1 个文件，超出限制 ',
+        type: 'warning'
+      })
+    },
+    handleSuccess(response, file, fileList) {
+      this.uploadData.attachmentId = response.data
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`)
     }
   }
 }

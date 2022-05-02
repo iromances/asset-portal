@@ -18,19 +18,33 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="120" :class-name="getSortClass('id')" />
-      <el-table-column label="市场" prop="market" sortable="custom" align="center" width="300" :class-name="getSortClass('id')" />
-      <el-table-column label="代码" prop="stockCode" align="center" />
+      <el-table-column label="ID" prop="id" sortable="custom" align="center" :class-name="getSortClass('id')" />
+      <el-table-column label="代码" prop="stockCode" align="center">
+        <template slot-scope="scope">
+          <a size="mini" style="margin-right: 2px;color: #1890ff;" type="text" @click="stockCodeClick(scope.row)">
+            {{ scope.row.stockCode }}
+          </a>
+        </template>
+      </el-table-column>
       <el-table-column label="名称" prop="stockName" width="250" align="center" />
+      <el-table-column label="市场" prop="market" sortable="custom" align="center" :class-name="getSortClass('id')" />
       <el-table-column label="交易方向" prop="position" align="center" />
-      <el-table-column label="进场时间" prop="approachTime" width="180" align="center" />
+      <el-table-column label="进场时间" prop="approachTime" width="180" align="center">
+        <template slot-scope="scope">
+          <span>{{ parse2Time(scope.row.approachTime) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="下单数量" prop="orderNum" align="center" />
       <el-table-column label="进场价格" prop="purchasePrice" align="center" />
 
       <el-table-column label="进场佣金" prop="inBrokerage" align="center" />
       <el-table-column label="进场杂费" prop="inOtherAmount" align="center" />
       <el-table-column label="进场费用合计" prop="inTotalAmount" align="center" />
-      <el-table-column label="出场日期" prop="outTime" width="180" align="center" />
+      <el-table-column label="出场日期" prop="outTime" width="180" align="center">
+        <template slot-scope="scope">
+          <span>{{ parse2Time(scope.row.outTime) }}</span>
+        </template>
+      </el-table-column>
 
       <el-table-column label="出场价格" prop="outPrice" align="center" />
       <el-table-column label="出场佣金" prop="outBrokerage" align="center" />
@@ -53,13 +67,70 @@
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+
+    <el-dialog
+      title="交易明细"
+      :visible.sync="tradeDetailsDialogVisible"
+      width="80%"
+      height="500px"
+      @closed="handleTradeDetailsDialogClosed"
+    >
+
+      <el-table
+        :key="tableKey"
+        v-loading="listLoading"
+        :data="tradeDetailList"
+        fit
+        highlight-current-row
+        style="width: 100%;"
+        @sort-change="sortChange"
+      >
+        <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')" />
+        <el-table-column label="代码" prop="stockCode" align="center" />
+        <el-table-column label="交易方向" prop="direction" align="center" />
+        <el-table-column label="下单价格" prop="orderPrice" align="center" />
+        <el-table-column label="下单数量" prop="orderNum" align="center" />
+        <el-table-column label="交易状态" prop="status" align="center" />
+        <el-table-column label="已成交" prop="avgPrice" align="center" />
+        <el-table-column label="下单时间" prop="orderTime" width="170" align="center">
+          <template slot-scope="scope">
+            <span>{{ parse2Time(scope.row.orderTime) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="订单类型" width="120px" prop="orderType" align="center" />
+        <el-table-column label="期限" prop="periodValidity" align="center" />
+        <el-table-column label="盘前盘后" prop="preOrAfterMarket" align="center" />
+        <el-table-column label="触发价" prop="triggerPrice" align="center" />
+        <el-table-column label="卖空" prop="sellingShort" align="center" />
+        <el-table-column label="订单来源" prop="orderSource" align="center" />
+        <el-table-column label="成交数量" prop="dealNum" align="center" />
+        <el-table-column label="成交价格" prop="dealPrice" align="center" />
+        <el-table-column label="成交金额" prop="dealAmount" align="center" />
+        <el-table-column label="成交时间" prop="dealTime" width="170" align="center">
+          <template slot-scope="scope">
+            <span>{{ parse2Time(scope.row.dealTime) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="佣金" prop="brokerage" align="center" />
+        <el-table-column label="平台使用费" width="90" prop="platformFee" align="center" />
+        <el-table-column label="交收费" prop="stockSettlementFee" align="center" />
+        <el-table-column label="证监会规费" width="90" prop="sfcFees" align="center" />
+        <el-table-column label="交易活动费" width="90" prop="transActivityFee" align="center" />
+        <el-table-column label="期权清算费" width="90" prop="optionClearingFee" align="center" />
+        <el-table-column label="交易所费用" width="90" prop="exchangeCost" align="center" />
+        <el-table-column label="合计费用" prop="totalAmount" align="center" />
+      </el-table>
+
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { fetchList } from '@/api/tradeRecordApi'
+import { parse2Time } from '@/utils/index'
 import waves from '@/directive/waves' // waves directive
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
+import { fetchByRecordId } from '@/api/tradeHistoryDetailApi' // secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -121,13 +192,16 @@ export default {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-      }
+      },
+      tradeDetailsDialogVisible: false,
+      tradeDetailList: []
     }
   },
   created() {
     this.getList()
   },
   methods: {
+    parse2Time,
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
@@ -162,6 +236,20 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
+    },
+    stockCodeClick(row) {
+      fetchByRecordId(row.id).then(response => {
+        console.log(response)
+        this.tradeDetailList = response.data
+        this.tradeDetailsDialogVisible = true
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
+    },
+    handleTradeDetailsDialogClosed() {
+
     }
   }
 }
