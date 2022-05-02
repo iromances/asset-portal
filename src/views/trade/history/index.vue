@@ -4,7 +4,7 @@
       <el-input v-model="listQuery.serialNo" placeholder="流水号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.stockCode" placeholder="代码" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.stockName" placeholder="名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.status" placeholder="交易状态" clearable style="width: 120px" class="filter-item">
+      <el-select v-model="listQuery.status" placeholder="交易状态" multiple collapse-tags clearable style="width: 180px" class="filter-item">
         <el-option v-for="item in statusArray" :key="item.key" :label="item.label" :value="item.value" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
@@ -32,7 +32,11 @@
       <el-table-column label="下单数量" prop="orderNum" align="center" />
       <el-table-column label="交易状态" prop="status" align="center" />
       <el-table-column label="已成交" prop="avgPrice" align="center" />
-      <el-table-column label="下单时间" prop="orderTime" width="170" align="center" />
+      <el-table-column label="下单时间" prop="orderTime" width="170" align="center">
+        <template slot-scope="scope">
+          <span>{{ parse2Time(scope.row.orderTime) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="订单类型" width="120px" prop="orderType" align="center" />
       <el-table-column label="期限" prop="periodValidity" align="center" />
       <el-table-column label="盘前盘后" prop="preOrAfterMarket" align="center" />
@@ -42,7 +46,11 @@
       <el-table-column label="成交数量" prop="dealNum" align="center" />
       <el-table-column label="成交价格" prop="dealPrice" align="center" />
       <el-table-column label="成交金额" prop="dealAmount" align="center" />
-      <el-table-column label="成交时间" prop="dealTime" width="170" align="center" />
+      <el-table-column label="成交时间" prop="dealTime" width="170" align="center">
+        <template slot-scope="scope">
+          <span>{{ parse2Time(scope.row.dealTime) }}</span>
+        </template>
+      </el-table-column>
 
       <el-table-column label="佣金" prop="brokerage" align="center" />
       <el-table-column label="平台使用费" width="90" prop="platformFee" align="center" />
@@ -62,6 +70,7 @@
 
 <script>
 import { fetchList } from '@/api/tradeHistoryDetailApi'
+import { parse2Time } from '@/utils/index'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
@@ -132,10 +141,10 @@ export default {
     this.getList()
   },
   methods: {
+    parse2Time,
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        console.log(response)
         this.list = response.data.records
         this.total = response.data.total
 
