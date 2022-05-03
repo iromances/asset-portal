@@ -45,11 +45,11 @@
           <svg-icon icon-class="nested" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
-          <div style="color: red" class="card-panel-text">
+          <div class="card-panel-text">
             平均收益率
             <count-to :start-val="0" :decimals="4" :end-val="pannelData.avgYield" :duration="3600" class="card-panel-num" />
           </div>
-          <div style="color: forestgreen" class="card-panel-text">
+          <div class="card-panel-text">
             平均亏损率
             <count-to :start-val="0" :decimals="4" :end-val="pannelData.avgLossRate * -1" :duration="3600" class="card-panel-num" />
           </div>
@@ -98,6 +98,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.item {
+  margin-top: 10px;
+  margin-right: 40px;
+}
+
 .panel-group {
   margin-top: 18px;
 
