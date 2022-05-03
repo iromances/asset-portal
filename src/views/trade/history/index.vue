@@ -31,21 +31,21 @@
       <el-table-column label="代码" prop="stockCode" align="center" />
       <el-table-column label="名称" prop="stockName" width="250" align="center" />
       <el-table-column label="交易方向" prop="direction" align="center" />
-      <el-table-column label="下单价格" prop="orderPrice" align="center" />
-      <el-table-column label="下单数量" prop="orderNum" align="center" />
       <el-table-column label="交易状态" prop="status" align="center" />
-      <el-table-column label="已成交" prop="avgPrice" align="center" />
+      <el-table-column label="订单类型" width="120px" prop="orderType" align="center" />
+      <el-table-column label="期限" prop="periodValidity" align="center" />
+      <el-table-column label="盘前盘后" prop="preOrAfterMarket" align="center" />
+      <el-table-column label="卖空" prop="sellingShort" align="center" />
+      <el-table-column label="订单来源" prop="orderSource" align="center" />
       <el-table-column label="下单时间" prop="orderTime" width="170" align="center">
         <template slot-scope="scope">
           <span>{{ parse2Time(scope.row.orderTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="订单类型" width="120px" prop="orderType" align="center" />
-      <el-table-column label="期限" prop="periodValidity" align="center" />
-      <el-table-column label="盘前盘后" prop="preOrAfterMarket" align="center" />
+      <el-table-column label="下单价格" prop="orderPrice" align="center" />
+      <el-table-column label="下单数量" prop="orderNum" align="center" />
+      <el-table-column label="已成交" prop="avgPrice" align="center" />
       <el-table-column label="触发价" prop="triggerPrice" align="center" />
-      <el-table-column label="卖空" prop="sellingShort" align="center" />
-      <el-table-column label="订单来源" prop="orderSource" align="center" />
       <el-table-column label="成交数量" prop="dealNum" align="center" />
       <el-table-column label="成交价格" prop="dealPrice" align="center" />
       <el-table-column label="成交金额" prop="dealAmount" align="center" />
@@ -54,7 +54,7 @@
           <span>{{ parse2Time(scope.row.dealTime) }}</span>
         </template>
       </el-table-column>
-
+      <el-table-column label="合计费用" prop="totalAmount" align="center" />
       <el-table-column label="佣金" prop="brokerage" align="center" />
       <el-table-column label="平台使用费" width="90" prop="platformFee" align="center" />
       <el-table-column label="交收费" prop="stockSettlementFee" align="center" />
@@ -62,8 +62,6 @@
       <el-table-column label="交易活动费" width="90" prop="transActivityFee" align="center" />
       <el-table-column label="期权清算费" width="90" prop="optionClearingFee" align="center" />
       <el-table-column label="交易所费用" width="90" prop="exchangeCost" align="center" />
-      <el-table-column label="合计费用" prop="totalAmount" align="center" />
-
       <el-table-column label="订单匹配标识" width="120" prop="matchFlag" align="center" />
     </el-table>
 

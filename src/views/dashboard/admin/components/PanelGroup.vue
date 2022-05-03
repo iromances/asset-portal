@@ -3,26 +3,26 @@
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('newVisitis')">
         <div class="card-panel-icon-wrapper icon-people">
-          <svg-icon icon-class="peoples" class-name="card-panel-icon" />
+          <svg-icon icon-class="guide" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            New Visits
+            期望值
           </div>
-          <count-to :start-val="0" :end-val="102400" :duration="2600" class="card-panel-num" />
+          <count-to :start-val="0" :decimals="2" :end-val="pannelData.expectations" :duration="2600" class="card-panel-num" />
         </div>
       </div>
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('messages')">
         <div class="card-panel-icon-wrapper icon-message">
-          <svg-icon icon-class="message" class-name="card-panel-icon" />
+          <svg-icon icon-class="search" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            Messages
+            平均正确率
           </div>
-          <count-to :start-val="0" :end-val="81212" :duration="3000" class="card-panel-num" />
+          <count-to :start-val="0" :decimals="2" :end-val="pannelData.avgAccuracy" :duration="3000" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -33,22 +33,26 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            Purchases
+            盈亏比
           </div>
-          <count-to :start-val="0" :end-val="9280" :duration="3200" class="card-panel-num" />
+          <count-to :start-val="0" :decimals="4" :end-val="pannelData.profitLoss" :duration="3200" class="card-panel-num" />
         </div>
       </div>
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('shoppings')">
         <div class="card-panel-icon-wrapper icon-shopping">
-          <svg-icon icon-class="shopping" class-name="card-panel-icon" />
+          <svg-icon icon-class="nested" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">
-            Shoppings
+          <div style="color: red" class="card-panel-text">
+            平均收益率
+            <count-to :start-val="0" :decimals="4" :end-val="pannelData.avgYield" :duration="3600" class="card-panel-num" />
           </div>
-          <count-to :start-val="0" :end-val="13600" :duration="3600" class="card-panel-num" />
+          <div style="color: forestgreen" class="card-panel-text">
+            平均亏损率
+            <count-to :start-val="0" :decimals="4" :end-val="pannelData.avgLossRate * -1" :duration="3600" class="card-panel-num" />
+          </div>
         </div>
       </div>
     </el-col>
@@ -57,10 +61,33 @@
 
 <script>
 import CountTo from 'vue-count-to'
+import request from '@/utils/request'
 
 export default {
   components: {
     CountTo
+  },
+  data() {
+    return {
+      pannelData: {
+        expectations: 0,
+        avgAccuracy: 0,
+        avgYield: 0,
+        avgLossRate: 0,
+        profitLoss: 0
+      }
+    }
+  },
+  beforeCreate() {
+    request({
+      url: 'http://localhost:8888/asset/dashboard/avg',
+      method: 'get'
+    }).then(response => {
+      this.pannelData = response.data
+    })
+  },
+  created() {
+    console.log(222)
   },
   methods: {
     handleSetLineChartData(type) {
