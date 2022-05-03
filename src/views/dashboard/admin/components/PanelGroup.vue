@@ -9,7 +9,7 @@
           <div class="card-panel-text">
             期望值
           </div>
-          <count-to :start-val="0" :decimals="2" :end-val="pannelData.expectations" :duration="2600" class="card-panel-num" />
+          <count-to :start-val="0" :decimals="2" :end-val="pannelData.expectations" suffix=" %" :duration="2600" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -22,7 +22,7 @@
           <div class="card-panel-text">
             平均正确率
           </div>
-          <count-to :start-val="0" :decimals="2" :end-val="pannelData.avgAccuracy" :duration="3000" class="card-panel-num" />
+          <count-to :start-val="0" :decimals="2" :end-val="pannelData.avgAccuracy" suffix=" %" :duration="3000" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -35,7 +35,7 @@
           <div class="card-panel-text">
             盈亏比
           </div>
-          <count-to :start-val="0" :decimals="4" :end-val="pannelData.profitLoss" :duration="3200" class="card-panel-num" />
+          <count-to :start-val="0" :decimals="2" :end-val="pannelData.profitLoss" :duration="3200" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -47,11 +47,11 @@
         <div class="card-panel-description">
           <div class="card-panel-text">
             平均收益率
-            <count-to :start-val="0" :decimals="4" :end-val="pannelData.avgYield" :duration="3600" class="card-panel-num" />
+            <count-to :start-val="0" :decimals="3" :end-val="pannelData.avgYield" suffix=" %" :duration="3600" class="card-panel-num" />
           </div>
           <div class="card-panel-text">
             平均亏损率
-            <count-to :start-val="0" :decimals="4" :end-val="pannelData.avgLossRate * -1" :duration="3600" class="card-panel-num" />
+            <count-to :start-val="0" :decimals="3" :end-val="pannelData.avgLossRate * -1" suffix=" %" :duration="3600" class="card-panel-num" />
           </div>
         </div>
       </div>
