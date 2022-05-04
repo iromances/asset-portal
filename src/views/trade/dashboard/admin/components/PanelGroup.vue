@@ -51,7 +51,7 @@
           </div>
           <div class="card-panel-text">
             平均亏损率
-            <count-to :start-val="0" :decimals="3" :end-val="pannelData.avgLossRate * -1" suffix=" %" :duration="3600" class="card-panel-num" />
+            <count-to :start-val="0" :decimals="3" :end-val="pannelData.avgLossRate" suffix=" %" :duration="3600" class="card-panel-num" />
           </div>
         </div>
       </div>
