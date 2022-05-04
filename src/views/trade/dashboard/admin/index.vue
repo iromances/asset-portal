@@ -4,7 +4,7 @@
 
     <panel-group @handleSetLineChartData="handleSetLineChartData" />
 
-    <el-row style="background:#fff;">
+    <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
       <!--      <line-chart :chart-data="lineChartData" />-->
       <bar-chart />
     </el-row>
@@ -27,30 +27,21 @@
       </el-col>
     </el-row>-->
 
-    <!--    <el-row :gutter="8">
+    <el-row :gutter="8">
       <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-right:8px;margin-bottom:30px;">
         <transaction-table />
       </el-col>
-      <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 6}" :xl="{span: 6}" style="margin-bottom:30px;">
-
-      </el-col>
-      <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 6}" :xl="{span: 6}" style="margin-bottom:30px;">
-        <box-card />
-      </el-col>
-    </el-row>-->
+      <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 6}" :xl="{span: 6}" style="margin-bottom:30px;" />
+      <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 6}" :xl="{span: 6}" style="margin-bottom:30px;" />
+    </el-row>
   </div>
 </template>
 
 <script>
 import GithubCorner from '@/components/GithubCorner'
 import PanelGroup from './components/PanelGroup'
-import LineChart from './components/LineChart'
-import RaddarChart from './components/RaddarChart'
-import PieChart from './components/PieChart'
 import BarChart from './components/BarChart'
 import TransactionTable from './components/TransactionTable'
-import TodoList from './components/TodoList'
-import BoxCard from './components/BoxCard'
 
 const lineChartData = {
   newVisitis: {
@@ -76,13 +67,8 @@ export default {
   components: {
     GithubCorner,
     PanelGroup,
-    LineChart,
-    RaddarChart,
-    PieChart,
     BarChart,
-    TransactionTable,
-    TodoList,
-    BoxCard
+    TransactionTable
   },
   data() {
     return {

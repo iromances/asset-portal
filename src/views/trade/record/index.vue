@@ -3,8 +3,24 @@
     <div class="filter-container">
       <el-input v-model="listQuery.stockCode" placeholder="代码" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.stockName" placeholder="名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-date-picker
+        v-model="listQuery.transMonth"
+        class="filter-item"
+        type="month"
+        value-format="yyyy-MM"
+        placeholder="交易月"
+      />
+      <!--      <el-date-picker
+        class="filter-item"
+        v-model="listQuery.endOutDate"
+        type="date"
+        placeholder="结束交易日期">
+      </el-date-picker>-->
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         查询
+      </el-button>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-s-operation" @click="generateMonthlyReport">
+        月度报表
       </el-button>
     </div>
 
@@ -39,7 +55,7 @@
       <el-table-column label="进场佣金" prop="inBrokerage" align="center" />
       <el-table-column label="进场杂费" prop="inOtherAmount" align="center" />
       <el-table-column label="进场费用合计" prop="inTotalAmount" align="center" />
-      <el-table-column label="出场日期" prop="outTime" width="180" align="center">
+      <el-table-column label="出场时间" prop="outTime" width="180" align="center">
         <template slot-scope="scope">
           <span>{{ parse2Time(scope.row.outTime) }}</span>
         </template>
@@ -49,8 +65,16 @@
       <el-table-column label="出场佣金" prop="outBrokerage" align="center" />
       <el-table-column label="出场杂费" prop="outOtherAmount" align="center" />
       <el-table-column label="出场费用合计" prop="outTotalAmount" align="center" />
-      <el-table-column label="损益情况" width="85" prop="profitLossSituationNoFee" align="center" />
-      <el-table-column label="实际损益情况" width="85" prop="profitLossSituation" align="center" />
+      <el-table-column label="损益情况" width="85" prop="profitLossSituationNoFee" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.profitLossSituationNoFee + '%' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="损益情况(含手续费)" width="90" prop="profitLossSituation" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.profitLossSituation + '%' }}</span>
+        </template>
+      </el-table-column>
 
       <el-table-column label="交易系统名称" prop="tradingSystem" align="center" />
       <el-table-column label="价格通道" prop="priceChannel" align="center" />
@@ -130,7 +154,8 @@ import { fetchList } from '@/api/tradeRecordApi'
 import { parse2Time } from '@/utils/index'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
-import { fetchByRecordId } from '@/api/tradeHistoryDetailApi' // secondary package based on el-pagination
+import { fetchByRecordId } from '@/api/tradeHistoryDetailApi'
+import request from '@/utils/request' // secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -208,11 +233,7 @@ export default {
         console.log(response)
         this.list = response.data.records
         this.total = response.data.total
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        this.listLoading = false
       })
     },
     handleFilter() {
@@ -243,13 +264,24 @@ export default {
         this.tradeDetailList = response.data
         this.tradeDetailsDialogVisible = true
         // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        this.listLoading = false
       })
     },
     handleTradeDetailsDialogClosed() {
 
+    },
+    generateMonthlyReport() {
+      request({
+        url: 'http://localhost:8888/asset/generate/monthly/trade/report',
+        method: 'post',
+        data: {}
+      }).then(response => {
+        this.$notify({
+          title: '提示',
+          message: '报表生成成功',
+          type: 'success'
+        })
+      })
     }
   }
 }
