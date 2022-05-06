@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="background-color: #fff;padding:16px 16px 0;">
     <el-row :gutter="40" class="panel-group">
       <el-col :xs="24" :sm="24" :lg="12" class="card-panel-col">
         <el-form ref="form" label-width="120px">
