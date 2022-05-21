@@ -5,7 +5,6 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
-
 /* Router Modules */
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -93,34 +92,39 @@ export const constantRoutes = [
       }
     ]
   },
-  //  业务数据路由
   {
-    path: '/trade',
+    path: '/resource',
     component: Layout,
-    redirect: '/table/complex-table',
-    name: 'Trade',
-    meta: {
-      title: 'Trade',
-      icon: 'table'
-    },
     children: [
       {
-        path: 'resource',
+        path: 'index',
         component: () => import('@/views/trade/history/index'),
         name: 'TradeHistoryDetail',
-        meta: { title: '历史成交明细' }
-      },
+        meta: { title: '历史成交明细', icon: 'pdf' }
+      }
+    ]
+  },
+  {
+    path: '/record',
+    component: Layout,
+    children: [
       {
-        path: 'record',
+        path: 'index',
         component: () => import('@/views/trade/record/index'),
         name: 'TradeRecord',
-        meta: { title: '交易记录' }
-      },
+        meta: { title: '交易记录', icon: 'pdf' }
+      }
+    ]
+  },
+  {
+    path: '/resource',
+    component: Layout,
+    children: [
       {
-        path: 'market',
+        path: 'index',
         component: () => import('@/views/trade/market/index'),
         name: 'DayilyMarket',
-        meta: { title: '市场行情模板' }
+        meta: { title: '市场行情模板', icon: 'pdf' }
       }
     ]
   }
