@@ -221,7 +221,7 @@ export default {
       uploadData: {
         attachmentId: null,
         tradeDate: new Date(),
-        autoDownload: true,
+        autoDownload: false,
         market: 'M'
       },
       fileList: []
@@ -313,17 +313,18 @@ export default {
           message: '文件解析成功！',
           type: 'success'
         })
-
-        console.log(response)
-        const url = window.URL.createObjectURL(new Blob([response.data]))
-        const fileName = this.uploadData.market + '_' + this.uploadData.tradeDate + '.ebk'
-        const link = document.createElement('a')
-        link.download = fileName
-        link.style.display = 'none'
-        link.href = url
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
+        if (this.uploadData.autoDownload) {
+          console.log(response)
+          const url = window.URL.createObjectURL(new Blob([response.data]))
+          const fileName = this.uploadData.market + '_' + this.uploadData.tradeDate + '.ebk'
+          const link = document.createElement('a')
+          link.download = fileName
+          link.style.display = 'none'
+          link.href = url
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+        }
       })
     },
     // 上传
