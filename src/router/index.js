@@ -117,7 +117,7 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/resource',
+    path: '/dayilyMarket',
     component: Layout,
     children: [
       {
@@ -125,6 +125,18 @@ export const constantRoutes = [
         component: () => import('@/views/trade/market/index'),
         name: 'DayilyMarket',
         meta: { title: '市场行情模板', icon: 'pdf' }
+      }
+    ]
+  },
+  {
+    path: '/News',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/trade/news/index'),
+        name: 'News',
+        meta: { title: '新闻事件记录', icon: 'pdf' }
       }
     ]
   }
